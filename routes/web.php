@@ -23,15 +23,35 @@ if ($request === false || $request === '' || $request === null) {
   $request = '/';
 }
 
-match ($request) {
-  '/' => new HomeController()->index(),
-  '/about' => new AboutController()->index(),
-  '/contact' => new ContactController()->index(),
-  '/todos' => new TodosController()->index(),
-  '/login' => new LoginController()->index(),
-  '/logout' => new LogoutController()->logout(),
-  '/register' => new RegisterController()->index(),
-  '/subscribe' => new SubscribeController()->index(),
-  '/profile' => new ProfileController()->index(),
-  default => new NotFoundController()->index(),
-};
+switch ($request) {
+    case '/':
+        (new HomeController())->index();
+        break;
+    case '/about':
+        (new AboutController())->index();
+        break;
+    case '/contact':
+        (new ContactController())->index();
+        break;
+    case '/todos':
+        (new TodosController())->index();
+        break;
+    case '/login':
+        (new LoginController())->index();
+        break;
+    case '/logout':
+        (new LogoutController())->logout();
+        break;
+    case '/register':
+        (new RegisterController())->index();
+        break;
+    case '/subscribe':
+        (new SubscribeController())->index();
+        break;
+    case '/profile':
+        (new ProfileController())->index();
+        break;
+    default:
+        (new NotFoundController())->index();
+        break;
+}
