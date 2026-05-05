@@ -4,6 +4,10 @@ A small practice application: register, sign in, manage todos with filters and p
 
 **Live demo:** [https://php-todo-nfab.onrender.com](https://php-todo-nfab.onrender.com)
 
+## Documentation
+
+Full onboarding and technical documentation for the team: **[docs/README.md](docs/README.md)**.
+
 ## Features
 
 - Session-based authentication (register / login / logout)
