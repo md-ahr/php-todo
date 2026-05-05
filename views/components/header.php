@@ -51,11 +51,9 @@ $authUser = auth_user();
                class="text-sm/6 font-semibold hover:text-blue-500 transition <?= $path === '/' ? 'text-blue-500' : 'text-white' ?>">Home</a>
             <a href="/todos"
                class="text-sm/6 font-semibold hover:text-blue-500 transition <?= $path === '/todos' ? 'text-blue-500' : 'text-white' ?>">Todos</a>
-            <a href="/subscribe"
-               class="text-sm/6 font-semibold hover:text-blue-500 transition <?= $path === '/subscribe' ? 'text-blue-500' : 'text-white' ?>">Subscribe</a>
             <?php if ($authUser !== null): ?>
-                <a href="/profile"
-                   class="text-sm/6 font-semibold hover:text-blue-500 transition <?= $path === '/profile' ? 'text-blue-500' : 'text-white' ?>">Profile</a>
+                <a href="/subscribe"
+                   class="text-sm/6 font-semibold hover:text-blue-500 transition <?= $path === '/subscribe' ? 'text-blue-500' : 'text-white' ?>">Subscribe</a>
             <?php endif; ?>
             <a href="/about"
                class="text-sm/6 font-semibold hover:text-blue-500 transition <?= $path === '/about' ? 'text-blue-500' : 'text-white' ?>">About
@@ -65,17 +63,38 @@ $authUser = auth_user();
         </el-popover-group>
         <div class="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:gap-x-4">
             <?php if ($authUser !== null): ?>
-                <span class="max-w-[14rem] truncate text-sm text-gray-300"
-                      title="<?= htmlspecialchars($authUser['email'], ENT_QUOTES, 'UTF-8') ?>">
-                    <?= htmlspecialchars($authUser['name'], ENT_QUOTES, 'UTF-8') ?>
-                </span>
-                <form method="post" action="/logout" class="inline-block">
-                    <input type="hidden" name="_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>"/>
-                    <button type="submit"
-                            class="rounded-md text-sm/6 font-semibold text-white ring-1 ring-white/15 px-3 py-1.5 transition hover:bg-white/5 hover:text-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400">
-                        Sign out
-                    </button>
-                </form>
+                <details class="relative">
+                    <summary
+                            class="flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-1.5 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400 [&::-webkit-details-marker]:hidden"
+                            aria-haspopup="menu"
+                            aria-label="Account menu">
+                        <span class="max-w-[14rem] truncate text-gray-100"
+                              title="<?= htmlspecialchars($authUser['email'], ENT_QUOTES, 'UTF-8') ?>">
+                            <?= htmlspecialchars($authUser['name'], ENT_QUOTES, 'UTF-8') ?>
+                        </span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+                             class="size-4 shrink-0 text-gray-400 opacity-90">
+                            <path fill-rule="evenodd"
+                                  d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+                                  clip-rule="evenodd"/>
+                        </svg>
+                    </summary>
+                    <div class="absolute right-0 z-50 mt-2 min-w-[13rem] rounded-lg border border-white/10 bg-gray-900 py-1 shadow-xl ring-1 ring-black/40"
+                         role="menu">
+                        <a href="/profile" role="menuitem"
+                           class="block px-4 py-2.5 text-sm font-semibold transition hover:bg-white/5 <?= $path === '/profile' ? 'text-blue-500' : 'text-white' ?>">
+                            Profile
+                        </a>
+                        <div class="mx-2 border-t border-white/10"></div>
+                        <form method="post" action="/logout" class="px-2 py-1.5" role="none">
+                            <input type="hidden" name="_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>"/>
+                            <button type="submit" role="menuitem"
+                                    class="w-full rounded-md px-3 py-2 text-left text-sm font-semibold text-white transition hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400">
+                                Sign out
+                            </button>
+                        </form>
+                    </div>
+                </details>
             <?php else: ?>
                 <a href="/login"
                    class="text-sm/6 font-semibold transition hover:text-blue-500 <?= $path === '/login' ? 'text-blue-500' : 'text-white' ?>">Log
@@ -132,11 +151,9 @@ $authUser = auth_user();
                                    class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold hover:bg-white/5 <?= $path === '/' ? 'text-blue-500' : 'text-white' ?>">Home</a>
                                 <a href="/todos"
                                    class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold hover:bg-white/5 <?= $path === '/todos' ? 'text-blue-500' : 'text-white' ?>">Todos</a>
-                                <a href="/subscribe"
-                                   class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold hover:bg-white/5 <?= $path === '/subscribe' ? 'text-blue-500' : 'text-white' ?>">Subscribe</a>
                                 <?php if ($authUser !== null): ?>
-                                    <a href="/profile"
-                                       class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold hover:bg-white/5 <?= $path === '/profile' ? 'text-blue-500' : 'text-white' ?>">Profile</a>
+                                    <a href="/subscribe"
+                                       class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold hover:bg-white/5 <?= $path === '/subscribe' ? 'text-blue-500' : 'text-white' ?>">Subscribe</a>
                                 <?php endif; ?>
                                 <a href="/about"
                                    class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold hover:bg-white/5 <?= $path === '/about' ? 'text-blue-500' : 'text-white' ?>">About
@@ -150,11 +167,13 @@ $authUser = auth_user();
                                         Signed in as
                                         <span class="block font-semibold text-white truncate"><?= htmlspecialchars($authUser['name'], ENT_QUOTES, 'UTF-8') ?></span>
                                     </p>
+                                    <a href="/profile"
+                                       class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold hover:bg-white/5 <?= $path === '/profile' ? 'text-blue-500' : 'text-white' ?>">Profile</a>
                                     <form method="post" action="/logout" class="-mx-3 block px-3">
                                         <input type="hidden" name="_token"
                                                value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>"/>
                                         <button type="submit"
-                                                class="w-full rounded-lg py-2.5 text-left text-base/7 font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/5">
+                                                class="w-full rounded-lg py-2.5 px-4 text-left text-base/7 font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/5">
                                             Sign out
                                         </button>
                                     </form>
