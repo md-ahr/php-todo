@@ -1,0 +1,55 @@
+# MySQL for local development.
+#
+# Usage:
+#   docker compose up -d
+#
+# Connect from your machine:
+#   Host: 127.0.0.1   Port: 3306 (or DB_PORT below)
+#
+# Connect from another container on this Compose network:
+#   Host: mysql       Port: 3306   (Docker DNS uses the service name)
+#
+# Example PDO DSN (PHP):
+#   mysql:host=mysql;dbname=todo;charset=utf8mb4
+#
+# "exec format error" starting MySQL usually means Docker is running an image for the
+# wrong CPU (often a leftover amd64 layer on Apple Silicon, or the opposite).
+# Fix:
+#   1. docker compose down
+#   2. docker rmi mysql:8.0 2>/dev/null; docker compose pull
+#   3. If it still fails, pin the CPU arch under `mysql:` → `platform: linux/arm64`
+#      on Apple Silicon, or `platform: linux/amd64` on Intel / x86_64 Linux.
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: php-todo-mysql
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-root}"
+      MYSQL_DATABASE: "${DB_DATABASE:-todo}"
+      MYSQL_USER: "${DB_USERNAME:-todo}"
+      MYSQL_PASSWORD: "${DB_PASSWORD:-secret}"
+      # Safer defaults for utf8 outside the container when using mysql client flags
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${DB_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  mysql_data:
+
+networks:
+  default:
+    name: php-todo

@@ -1,0 +1,14 @@
+{
+  "name": "practice/php-todo",
+  "description": "Practice app with a minimal Laravel-style skeleton",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  }
+}

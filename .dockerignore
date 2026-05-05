@@ -1,0 +1,6 @@
+.git
+.gitignore
+.idea
+.env
+*.md
+node_modules
