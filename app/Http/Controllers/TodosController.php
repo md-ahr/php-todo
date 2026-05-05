@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 
 use App\Auth\RequireAuthentication;
 use App\Repositories\TodoRepository;
+use App\Repositories\UserSubscriptionRepository;
+use App\Subscriptions\TodoQuota;
 use App\Todos\TodoListState;
 use App\Validation\TodoValidator;
 use PDOException;
@@ -91,8 +93,27 @@ final class TodosController
         $priority = strtolower(trim((string) ($_POST['priority'] ?? 'med')));
 
         try {
+            $subs = new UserSubscriptionRepository(db());
+            $totals = $repo->aggregateCounts($userId);
+            $quota = TodoQuota::assess($subs, $userId, (int) $totals['total']);
+            if (!$quota['can_create']) {
+                $_SESSION['_todo_notice'] = [
+                    'type' => 'error',
+                    'text' => 'Free tier is limited to ' . $quota['limit'] . ' todos. Subscribe to continue adding.',
+                ];
+                $this->todoRedirect303($returnState);
+            }
+
             $repo->create($userId, $title, $notes, $priority);
         } catch (PDOException $e) {
+            if ($this->looksLikeMissingSubscriptionsTable($e)) {
+                $_SESSION['_todo_notice'] = [
+                    'type' => 'error',
+                    'text' => 'Subscriptions table missing. Run: php database/migrate.php',
+                ];
+                $this->todoRedirect303($returnState);
+            }
+
             $this->pdoFailureToNotice($e, $returnState, 'Could not save the todo.');
         }
 
@@ -171,6 +192,20 @@ final class TodosController
         $this->todoRedirect303($returnState);
     }
 
+    private function looksLikeMissingSubscriptionsTable(PDOException $e): bool
+    {
+        $errno = $e->errorInfo[1] ?? null;
+        $msg = $e->getMessage();
+
+        if (!str_contains($msg, 'user_subscriptions')) {
+            return false;
+        }
+
+        return $errno === 1146
+            || str_contains($msg, "doesn't exist")
+            || str_contains($msg, 'Base table or view not found');
+    }
+
     private function pdoFailureToNotice(PDOException $e, TodoListState $returnState, string $fallbackMsg): never
     {
         $errno = $e->errorInfo[1] ?? null;
@@ -199,6 +234,8 @@ final class TodosController
         }
 
         $counts = $repo->aggregateCounts($userId);
+        $subsRepo = new UserSubscriptionRepository(db());
+        $quota = TodoQuota::assess($subsRepo, $userId, (int) $counts['total']);
         /** @var list<array{id:int,user_id:int,title:string,notes:?string,priority:string,is_completed:int,created_at:string,updated_at:string}> $items */
         $items = $repo->paginate($userId, $stateAligned);
 
@@ -232,6 +269,16 @@ final class TodosController
             : '';
 
         $counts = ['total' => 0, 'active' => 0, 'done' => 0];
+
+        $lim = TodoQuota::freeTodoLimit();
+        $t = (int) ($counts['total'] ?? 0);
+        $quota = [
+            'limit' => $lim,
+            'total' => $t,
+            'subscribed' => false,
+            'can_create' => $t < $lim,
+            'remaining' => max(0, $lim - $t),
+        ];
 
         $items = [];
         $stateAligned = TodoListState::fromGlobals()->normalizedForTotal(0, 8);

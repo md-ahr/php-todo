@@ -51,6 +51,12 @@ $authUser = auth_user();
                class="text-sm/6 font-semibold hover:text-blue-500 transition <?= $path === '/' ? 'text-blue-500' : 'text-white' ?>">Home</a>
             <a href="/todos"
                class="text-sm/6 font-semibold hover:text-blue-500 transition <?= $path === '/todos' ? 'text-blue-500' : 'text-white' ?>">Todos</a>
+            <a href="/subscribe"
+               class="text-sm/6 font-semibold hover:text-blue-500 transition <?= $path === '/subscribe' ? 'text-blue-500' : 'text-white' ?>">Subscribe</a>
+            <?php if ($authUser !== null): ?>
+                <a href="/profile"
+                   class="text-sm/6 font-semibold hover:text-blue-500 transition <?= $path === '/profile' ? 'text-blue-500' : 'text-white' ?>">Profile</a>
+            <?php endif; ?>
             <a href="/about"
                class="text-sm/6 font-semibold hover:text-blue-500 transition <?= $path === '/about' ? 'text-blue-500' : 'text-white' ?>">About
                 Us</a>
@@ -126,6 +132,12 @@ $authUser = auth_user();
                                    class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold hover:bg-white/5 <?= $path === '/' ? 'text-blue-500' : 'text-white' ?>">Home</a>
                                 <a href="/todos"
                                    class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold hover:bg-white/5 <?= $path === '/todos' ? 'text-blue-500' : 'text-white' ?>">Todos</a>
+                                <a href="/subscribe"
+                                   class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold hover:bg-white/5 <?= $path === '/subscribe' ? 'text-blue-500' : 'text-white' ?>">Subscribe</a>
+                                <?php if ($authUser !== null): ?>
+                                    <a href="/profile"
+                                       class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold hover:bg-white/5 <?= $path === '/profile' ? 'text-blue-500' : 'text-white' ?>">Profile</a>
+                                <?php endif; ?>
                                 <a href="/about"
                                    class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold hover:bg-white/5 <?= $path === '/about' ? 'text-blue-500' : 'text-white' ?>">About
                                     Us</a>

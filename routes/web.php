@@ -12,7 +12,9 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\NotFoundController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\SubscribeController;
 use App\Http\Controllers\TodosController;
 
 $request = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
@@ -29,5 +31,7 @@ match ($request) {
   '/login' => new LoginController()->index(),
   '/logout' => new LogoutController()->logout(),
   '/register' => new RegisterController()->index(),
+  '/subscribe' => new SubscribeController()->index(),
+  '/profile' => new ProfileController()->index(),
   default => new NotFoundController()->index(),
 };

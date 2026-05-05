@@ -13,6 +13,15 @@ $lastPage ??= 1;
 $from ??= 0;
 $to ??= 0;
 
+$lim = \App\Subscriptions\TodoQuota::freeTodoLimit();
+$quota ??= [
+    'limit' => $lim,
+    'total' => (int) ($counts['total'] ?? 0),
+    'subscribed' => false,
+    'can_create' => (int) ($counts['total'] ?? 0) < $lim,
+    'remaining' => max(0, $lim - (int) ($counts['total'] ?? 0)),
+];
+
 /** @var \App\Todos\TodoListState $stateAligned */
 $stateAligned ??= \App\Todos\TodoListState::fromGlobals();
 
@@ -35,6 +44,27 @@ if (!function_exists('e')) {
     </div>
 
     <div class="mx-auto max-w-5xl px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pt-14">
+        <?php if (($quota['subscribed'] ?? false) === false): ?>
+            <div class="mb-6 rounded-xl border <?= !($quota['can_create'] ?? true) ? 'border-amber-500/40 bg-amber-500/10' : 'border-white/10 bg-white/5' ?> px-4 py-3 text-sm text-gray-200"
+                 role="status">
+                <?php if (($quota['can_create'] ?? true) === false): ?>
+                    <p class="font-semibold text-amber-50">You have reached the <?= (int) $quota['limit'] ?>-todo free limit.</p>
+                    <p class="mt-2 text-amber-100/90">
+                        <a href="/subscribe" class="font-semibold text-indigo-300 underline decoration-indigo-400/50 underline-offset-4 hover:text-indigo-200">
+                            Subscribe</a> for unlimited todos. You can still edit or remove existing tasks.
+                    </p>
+                <?php else: ?>
+                    <p>
+                        Free tier: <span class="font-semibold text-white"><?= (int) $quota['total'] ?></span> /
+                        <span class="font-semibold text-white"><?= (int) $quota['limit'] ?></span> todos.
+                        <?php if (($quota['remaining'] ?? 0) > 0): ?>
+                            <span class="text-gray-400">· <?= (int) $quota['remaining'] ?> <?= (int) $quota['remaining'] === 1 ? 'slot' : 'slots' ?> left before you need a subscription.</span>
+                        <?php endif; ?>
+                    </p>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+
         <?php if ($welcomeFlash !== ''): ?>
             <div class="mb-6 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100"
                  role="status">
@@ -88,10 +118,17 @@ if (!function_exists('e')) {
                     </div>
                 </dl>
             </div>
+            <?php if (!empty($quota['can_create'])): ?>
             <button type="button" id="btn-open-add"
                     class="shrink-0 rounded-lg bg-indigo-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400">
                 Add todo
             </button>
+            <?php else: ?>
+            <a href="/subscribe"
+               class="inline-flex shrink-0 items-center justify-center rounded-lg bg-indigo-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400">
+                Subscribe to add todos
+            </a>
+            <?php endif; ?>
         </header>
 
         <section
@@ -417,15 +454,18 @@ if (!function_exists('e')) {
     (() => {
         const dialog = document.getElementById('dialog-form');
 
-        document.getElementById('btn-open-add').addEventListener('click', () => {
-            document.getElementById('field-title').value = '';
-            document.getElementById('field-notes').value = '';
-            document.getElementById('prio-med').checked = true;
-            document.getElementById('todo-form-action').value = 'create';
-            document.getElementById('todo-form-id').value = '';
-            document.getElementById('todo-dialog-heading').textContent = 'Add todo';
-            dialog.showModal();
-        });
+        const openBtn = document.getElementById('btn-open-add');
+        if (openBtn) {
+            openBtn.addEventListener('click', () => {
+                document.getElementById('field-title').value = '';
+                document.getElementById('field-notes').value = '';
+                document.getElementById('prio-med').checked = true;
+                document.getElementById('todo-form-action').value = 'create';
+                document.getElementById('todo-form-id').value = '';
+                document.getElementById('todo-dialog-heading').textContent = 'Add todo';
+                dialog.showModal();
+            });
+        }
 
         document.getElementById('btn-form-cancel').addEventListener('click', () => dialog.close());
 

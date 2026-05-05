@@ -15,30 +15,42 @@ final class SubscriptionPlans
     /** @var list<string> */
     private const KEYS = [self::MONTHLY, self::YEARLY, self::LIFETIME];
 
-    /** @return list<array{key:string,title:string,copy:string,usd:number,period:string}> */
+    /** @return list<array{key:string,title:string,copy:string,usd:number,period:string,features:list<string>}> */
     public static function catalog(): array
     {
         return [
             [
                 'key' => self::MONTHLY,
                 'title' => 'Monthly',
-                'copy' => 'Full access billed every month.',
+                'copy' => 'Unlimited todos on a simple month-to-month plan. Best if you want full access without committing to a longer term.',
                 'usd' => 5,
                 'period' => 'per month',
+                'features' => [
+                    'No cap on how many todos you can create',
+                    'Renews monthly — pause or switch plans anytime',
+                ],
             ],
             [
                 'key' => self::YEARLY,
                 'title' => 'Yearly',
-                'copy' => 'Best value — two months free vs monthly.',
+                'copy' => 'The same unlimited access, billed once a year. You pay for about ten months instead of twelve when compared to monthly.',
                 'usd' => 50,
                 'period' => 'per year',
+                'features' => [
+                    'Everything in Monthly, at a lower effective price',
+                    'One charge per year — less to think about',
+                ],
             ],
             [
                 'key' => self::LIFETIME,
                 'title' => 'Lifetime',
-                'copy' => 'Pay once — unlimited todos with no renewal.',
+                'copy' => 'A single payment covers unlimited todos for as long as you use the app — no subscription renewals or future price hikes for this tier.',
                 'usd' => 200,
                 'period' => 'one-time',
+                'features' => [
+                    'Unlimited todos with no expiry on your access',
+                    'Pay once — no recurring charges from this plan',
+                ],
             ],
         ];
     }

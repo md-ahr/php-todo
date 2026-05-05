@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace App\Database;
 
 use PDO;
+use PDOException;
 
 /**
  * Lazily builds a shared PDO connection to MySQL (utf8mb4).
+ *
+ * If you see HY000 / 2006 "server has gone away", the server dropped TCP (timeouts,
+ * restarts, full disk causing mysqld instability, Docker not ready). Prefer fixing
+ * the environment; callers may reset and retry once via {@see self::reset()}.
  */
 final class Connection
 {
@@ -36,6 +41,18 @@ final class Connection
         ]);
 
         return self::$pdo;
+    }
+
+    /**
+     * MySQL ER_SERVER_GONE_ERROR (2006) or equivalent message after a stall/crash/restart.
+     */
+    public static function isMySqlGoneAway(PDOException $e): bool
+    {
+        $driverCode = isset($e->errorInfo[1]) ? (int) $e->errorInfo[1] : 0;
+
+        return $driverCode === 2006
+            || str_contains(strtolower($e->getMessage()), 'gone away')
+            || str_contains(strtolower($e->getMessage()), 'lost connection');
     }
 
     public static function reset(): void

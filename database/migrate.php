@@ -29,10 +29,17 @@ if ($sql === false) {
 
 try {
     App\Database\Connection::reset();
-    $pdo = db();
-    $pdo->exec($sql);
+
+    db_retry_once(static function (\PDO $pdo) use ($sql): void {
+        $pdo->exec($sql);
+    });
 } catch (Throwable $e) {
     fwrite(STDERR, 'Migration failed: ' . $e->getMessage() . "\n");
+    if ($e instanceof \PDOException && App\Database\Connection::isMySqlGoneAway($e)) {
+        fwrite(STDERR, "Tip: Ensure MySQL is running (docker compose up -d), DB_HOST/DB_PORT match, and\n");
+        fwrite(STDERR, "     the disk is not full. A single reconnect was attempted automatically.\n");
+    }
+
     exit(1);
 }
 

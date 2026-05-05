@@ -59,4 +59,27 @@ final class UserRepository
 
         return (int) $this->pdo->lastInsertId();
     }
+
+    /**
+     * @return array{id:int,name:string,email:string,created_at:string}|null created_at Y-m-d H:i:s
+     */
+    public function findPublicProfileById(int $id): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT id, name, email, created_at FROM users WHERE id = ? LIMIT 1'
+        );
+        $stmt->execute([$id]);
+        /** @var array<string, mixed>|false $row */
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row === false) {
+            return null;
+        }
+
+        return [
+            'id' => (int) $row['id'],
+            'name' => (string) $row['name'],
+            'email' => (string) $row['email'],
+            'created_at' => (string) $row['created_at'],
+        ];
+    }
 }

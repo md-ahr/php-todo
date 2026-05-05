@@ -60,6 +60,30 @@ if (!function_exists('db')) {
     }
 }
 
+if (!function_exists('db_retry_once')) {
+    /**
+     * Run a closure with PDO; reconnect once after MySQL "gone away" (2006).
+     *
+     * @template T
+     * @param callable(\PDO):T $callback
+     * @return T
+     */
+    function db_retry_once(callable $callback): mixed
+    {
+        try {
+            return $callback(db());
+        } catch (\PDOException $e) {
+            if (\App\Database\Connection::isMySqlGoneAway($e)) {
+                \App\Database\Connection::reset();
+
+                return $callback(db());
+            }
+
+            throw $e;
+        }
+    }
+}
+
 if (!function_exists('csrf_token')) {
     function csrf_token(): string
     {
