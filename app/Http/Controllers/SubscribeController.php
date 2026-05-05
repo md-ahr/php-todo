@@ -36,7 +36,7 @@ final class SubscribeController
                     $noticeMessage = 'Session expired — refresh this page and try again.';
                 } elseif (!TodoQuota::allowSimulatedCheckout()) {
                     $noticeType = 'error';
-                    $noticeMessage = 'Checkout is not enabled. Configure payments (e.g. Stripe) or set APP_SIMULATE_SUBSCRIPTION_CHECKOUT=true during development.';
+                    $noticeMessage = 'Checkout is not enabled. Set APP_SIMULATE_SUBSCRIPTION_CHECKOUT=true during development.';
                 } elseif ($planRaw !== '' && !SubscriptionPlans::isKnownPlan($planRaw)) {
                     $noticeType = 'error';
                     $noticeMessage = 'Please choose a valid plan.';

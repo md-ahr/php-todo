@@ -32,7 +32,7 @@ function esc(string $s): string
                 Stay on the free tier with <?= (int) \App\Subscriptions\TodoQuota::freeTodoLimit() ?> todos, or subscribe
                 for unlimited tasks.
                 <?php if ($simulate): ?>
-                    <span class="mt-2 block text-amber-200/90">Practice mode uses instant checkout — wire Stripe for real payments.</span>
+                    <span class="mt-2 block text-amber-200/90">Practice mode uses instant checkout — no real payment processor.</span>
                 <?php endif; ?>
             </p>
         </header>
@@ -89,7 +89,7 @@ function esc(string $s): string
 
                         <?php if (!$simulate): ?>
                             <p class="mt-6 rounded-lg bg-white/5 px-4 py-3 text-xs text-gray-400 ring-1 ring-white/10">
-                                Real payments disabled. Integrate Stripe (or temporarily set APP_SIMULATE_SUBSCRIPTION_CHECKOUT=true for practice).
+                                Real payments disabled. Set APP_SIMULATE_SUBSCRIPTION_CHECKOUT=true for development, or integrate a payment provider.
                             </p>
                         <?php elseif ($lifetimeHeld): ?>
                             <p class="mt-6 text-center text-sm font-medium text-emerald-200">
